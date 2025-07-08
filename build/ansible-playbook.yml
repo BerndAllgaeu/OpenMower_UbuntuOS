@@ -4,6 +4,13 @@
   connection: chroot
   become: true
   tasks:
+    - name: Restore /etc/resolv.conf as symlink to systemd-resolved (Ubuntu Default)
+      file:
+        src: /run/systemd/resolve/stub-resolv.conf
+        dest: /etc/resolv.conf
+        state: link
+        force: true
+
     - name: Ensure Zielverzeichnis für Setup-WebUI existiert
       file:
         path: /opt/openmower/setup_webui

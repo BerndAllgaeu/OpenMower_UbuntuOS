@@ -53,9 +53,10 @@ mkdir -p "$ANSIBLE_SRC"
 rsync -a --exclude venv --exclude __pycache__ --exclude '*.pyc' "$SETUP_WEBUI_SRC/" "$ANSIBLE_SRC/setup_webui/"
 
 sudo cp "$(dirname "$0")/ansible-playbook.yml" "$MNTDIR/root/ansible-playbook.yml"
+sudo cp "$(dirname "$0")/ansible-cleanup.yml" "$MNTDIR/root/ansible-cleanup.yml"
 sudo cp -r "$ANSIBLE_SRC" "$MNTDIR/ansible_src"
 
-sudo chroot "$MNTDIR" bash -c "apt-get update && apt-get install -y ansible && ansible-playbook /root/ansible-playbook.yml"
+sudo chroot "$MNTDIR" bash -c "apt-get update && apt-get install -y ansible && ansible-playbook /root/ansible-playbook.yml && ansible-playbook /root/ansible-cleanup.yml"
 
 # 6. Unmount und aufräumen
 sudo umount "$MNTDIR"
