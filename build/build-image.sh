@@ -39,6 +39,9 @@ MNTDIR="$OUTPUT_DIR/mnt-rootfs"
 mkdir -p "$MNTDIR"
 sudo mount "${LOOPDEV}p2" "$MNTDIR"
 
+# DNS für chroot bereitstellen, damit apt-get funktioniert
+sudo cp /etc/resolv.conf "$MNTDIR/etc/resolv.conf"
+
 # 5. Setup-WebUI und weitere Anpassungen per Ansible
 ANSIBLE_SRC="$OUTPUT_DIR/ansible_src"
 rm -rf "$ANSIBLE_SRC"
