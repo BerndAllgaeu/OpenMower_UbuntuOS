@@ -1,0 +1,23 @@
+---
+- name: OpenMower UbuntuOS Customization
+  hosts: localhost
+  connection: chroot
+  become: true
+  tasks:
+    - name: Ensure Zielverzeichnis für Setup-WebUI existiert
+      file:
+        path: /opt/openmower/setup_webui
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Kopiere Setup-WebUI ins Image
+      copy:
+        src: /ansible_src/setup_webui/
+        dest: /opt/openmower/setup_webui/
+        owner: root
+        group: root
+        mode: preserve
+
+    # Weitere Anpassungen (Pakete, Services, etc.) können hier folgen

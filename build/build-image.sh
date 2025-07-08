@@ -41,8 +41,19 @@ MNTDIR="mnt-rootfs"
 mkdir -p "$MNTDIR"
 sudo mount "${LOOPDEV}p2" "$MNTDIR"
 
-# 5. Setup-WebUI ins Image kopieren
-sudo rsync -a --exclude venv --exclude __pycache__ --exclude '*.pyc' "$(dirname "$0")/../setup_webui/" "$MNTDIR/opt/openmower/setup_webui/"
+# 5. Setup-WebUI und weitere Anpassungen per Ansible
+# Vorbereitungen: Setup-WebUI für Ansible bereitstellen
+ANSIBLE_SRC="$OUTPUT_DIR/ansible_src"
+rm -rf "$ANSIBLE_SRC"
+mkdir -p "$ANSIBLE_SRC"
+rsync -a --exclude venv --exclude __pycache__ --exclude '*.pyc' "$(dirname "$0")/../setup_webui/" "$ANSIBLE_SRC/setup_webui/"
+
+# Ansible Playbook ins gemountete Image kopieren
+sudo cp "$(dirname "$0")/ansible-playbook.yml" "$MNTDIR/root/ansible-playbook.yml"
+sudo cp -r "$ANSIBLE_SRC" "$MNTDIR/ansible_src"
+
+# Chroot und Ansible ausführen
+sudo chroot "$MNTDIR" bash -c "apt-get update && apt-get install -y ansible && ansible-playbook /root/ansible-playbook.yml"
 
 # 6. (Optional) Weitere Anpassungen, z.B. systemd-Service, Konfigurationsdateien
 # ...hier können weitere Anpassungen folgen...
