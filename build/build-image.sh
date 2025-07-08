@@ -5,9 +5,9 @@ set -e
 # Voraussetzungen: kpartx, wget, xz, rsync, sudo, losetup, mount, chroot
 
 # Konfiguration
-UBUNTU_URL="https://cdimage.ubuntu.com/releases/24.04/release/ubuntu-24.04.1-preinstalled-server-arm64+raspi.img.xz"
-IMG_NAME="ubuntu-24.04.1-preinstalled-server-arm64+raspi.img"
-IMG_XZ="ubuntu-24.04.1-preinstalled-server-arm64+raspi.img.xz"
+UBUNTU_URL="https://cdimage.ubuntu.com/releases/noble/release/ubuntu-24.04.2-preinstalled-server-arm64+raspi.img.xz"
+IMG_NAME="ubuntu-24.04.2-preinstalled-server-arm64+raspi.img"
+IMG_XZ="ubuntu-24.04.2-preinstalled-server-arm64+raspi.img.xz"
 OUTPUT_DIR="$(dirname "$0")/../output"
 WORK_IMG="$OUTPUT_DIR/OpenMower_UbuntuOS.img"
 
