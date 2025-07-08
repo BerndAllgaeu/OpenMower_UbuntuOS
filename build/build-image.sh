@@ -8,13 +8,11 @@ set -e
 UBUNTU_URL="https://cdimage.ubuntu.com/releases/noble/release/ubuntu-24.04.2-preinstalled-server-arm64+raspi.img.xz"
 IMG_NAME="ubuntu-24.04.2-preinstalled-server-arm64+raspi.img"
 IMG_XZ="ubuntu-24.04.2-preinstalled-server-arm64+raspi.img.xz"
-OUTPUT_DIR="$(dirname "$0")/../output"
+OUTPUT_DIR="$(readlink -f $(dirname "$0")/../output)"
 WORK_IMG="$OUTPUT_DIR/OpenMower_UbuntuOS.img"
+SETUP_WEBUI_SRC="$(readlink -f $(dirname "$0")/../setup_webui)"
 
-echo "[DEBUG] Aktuelles Arbeitsverzeichnis: $(pwd)"
-echo "[DEBUG] OUTPUT_DIR absolut: $(readlink -f "$OUTPUT_DIR")"
 mkdir -p "$OUTPUT_DIR"
-echo "[DEBUG] OUTPUT_DIR ist: $OUTPUT_DIR"
 
 # 1. Download Ubuntu-Image, falls nicht vorhanden
 if [ ! -f "$OUTPUT_DIR/$IMG_XZ" ]; then
@@ -29,50 +27,36 @@ if [ ! -f "$OUTPUT_DIR/$IMG_NAME" ]; then
 fi
 
 # 3. Kopiere das Image als Arbeitskopie
-echo "[DEBUG] Aktuelles Arbeitsverzeichnis vor cp: $(pwd)"
-echo "[DEBUG] OUTPUT_DIR absolut vor cp: $(readlink -f "$OUTPUT_DIR")"
 cp -f "$OUTPUT_DIR/$IMG_NAME" "$WORK_IMG"
-
-cd "$OUTPUT_DIR"
 
 # 4. Partitionen einbinden
 LOOPDEV=$(sudo losetup --show -fP "$WORK_IMG")
 echo "[INFO] Loopdevice: $LOOPDEV"
-
-# Warte kurz, bis Partitionen erkannt werden
 sleep 2
 
 # Mount rootfs (zweite Partition)
-MNTDIR="mnt-rootfs"
+MNTDIR="$OUTPUT_DIR/mnt-rootfs"
 mkdir -p "$MNTDIR"
 sudo mount "${LOOPDEV}p2" "$MNTDIR"
 
 # 5. Setup-WebUI und weitere Anpassungen per Ansible
-# Vorbereitungen: Setup-WebUI für Ansible bereitstellen
 ANSIBLE_SRC="$OUTPUT_DIR/ansible_src"
 rm -rf "$ANSIBLE_SRC"
 mkdir -p "$ANSIBLE_SRC"
-SETUP_WEBUI_SRC="$(readlink -f \"$(dirname \"$0\")/../setup_webui\")"
 rsync -a --exclude venv --exclude __pycache__ --exclude '*.pyc' "$SETUP_WEBUI_SRC/" "$ANSIBLE_SRC/setup_webui/"
 
-# Ansible Playbook ins gemountete Image kopieren
 sudo cp "$(dirname "$0")/ansible-playbook.yml" "$MNTDIR/root/ansible-playbook.yml"
 sudo cp -r "$ANSIBLE_SRC" "$MNTDIR/ansible_src"
 
-# Chroot und Ansible ausführen
 sudo chroot "$MNTDIR" bash -c "apt-get update && apt-get install -y ansible && ansible-playbook /root/ansible-playbook.yml"
 
-# 6. (Optional) Weitere Anpassungen, z.B. systemd-Service, Konfigurationsdateien
-# ...hier können weitere Anpassungen folgen...
-
-# 7. Unmount und aufräumen
+# 6. Unmount und aufräumen
 sudo umount "$MNTDIR"
 sudo losetup -d "$LOOPDEV"
 rm -rf "$MNTDIR"
 
-# 8. Komprimieren
+# 7. Komprimieren
 xz -z -f "$WORK_IMG"
 
 ls -lh "$OUTPUT_DIR"
 echo "[INFO] Build abgeschlossen. Image liegt in $OUTPUT_DIR/OpenMower_UbuntuOS.img.xz"
-exit 0
