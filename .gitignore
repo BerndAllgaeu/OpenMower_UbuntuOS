@@ -1,12 +1,10 @@
 # User-spezifische Konfiguration
 config.yaml
 
-# Build Artefakte
+# Build-Artefakte und generierte Dateien
 *.img
 *.img.xz
-build/
 output/
 
 # Python venvs
 setup_webui/venv/
-config.yaml
