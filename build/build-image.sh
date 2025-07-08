@@ -44,6 +44,7 @@ mkdir -p "$MNTDIR"
 sudo mount "${LOOPDEV}p2" "$MNTDIR"
 
 # DNS für chroot bereitstellen, damit apt-get funktioniert
+sudo rm -f "$MNTDIR/etc/resolv.conf"
 sudo cp /etc/resolv.conf "$MNTDIR/etc/resolv.conf"
 
 # 5. Setup-WebUI und weitere Anpassungen per Ansible
