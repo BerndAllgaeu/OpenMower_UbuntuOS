@@ -5,6 +5,7 @@ config.yaml
 *.img
 *.img.xz
 output/
+logs/
 
 # Python venvs
 setup_webui/venv/
