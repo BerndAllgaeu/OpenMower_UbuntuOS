@@ -11,6 +11,8 @@ IMG_XZ="ubuntu-24.04.2-preinstalled-server-arm64+raspi.img.xz"
 OUTPUT_DIR="$(dirname "$0")/../output"
 WORK_IMG="$OUTPUT_DIR/OpenMower_UbuntuOS.img"
 
+echo "[DEBUG] Aktuelles Arbeitsverzeichnis: $(pwd)"
+echo "[DEBUG] OUTPUT_DIR absolut: $(readlink -f "$OUTPUT_DIR")"
 mkdir -p "$OUTPUT_DIR"
 echo "[DEBUG] OUTPUT_DIR ist: $OUTPUT_DIR"
 cd "$OUTPUT_DIR"
@@ -28,6 +30,8 @@ if [ ! -f "$IMG_NAME" ]; then
 fi
 
 # 3. Kopiere das Image als Arbeitskopie
+echo "[DEBUG] Aktuelles Arbeitsverzeichnis vor cp: $(pwd)"
+echo "[DEBUG] OUTPUT_DIR absolut vor cp: $(readlink -f "$OUTPUT_DIR")"
 mkdir -p "$OUTPUT_DIR"
 echo "[DEBUG] OUTPUT_DIR vor cp: $OUTPUT_DIR"
 cp -f "$IMG_NAME" "$WORK_IMG"
