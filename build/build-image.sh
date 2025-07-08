@@ -14,13 +14,13 @@ set -e
 bash $(dirname "$0")/install_setup_webui.sh
 
 # Dummy-Image erzeugen (für CI-Demo)
-mkdir -p ../output
-IMG=../output/OpenMower_UbuntuOS.img
-XZ=../output/OpenMower_UbuntuOS.img.xz
+mkdir -p "$(dirname "$0")/../output"
+IMG="$(dirname "$0")/../output/OpenMower_UbuntuOS.img"
+XZ="$(dirname "$0")/../output/OpenMower_UbuntuOS.img.xz"
 dd if=/dev/zero of="$IMG" bs=1M count=10
 xz -z -f "$IMG"
 
-ls -lh ../output
+ls -lh "$(dirname "$0")/../output"
 
 echo "[INFO] Build-Logik für echtes Image folgt!"
 exit 0
