@@ -12,6 +12,7 @@ OUTPUT_DIR="$(dirname "$0")/../output"
 WORK_IMG="$OUTPUT_DIR/OpenMower_UbuntuOS.img"
 
 mkdir -p "$OUTPUT_DIR"
+echo "[DEBUG] OUTPUT_DIR ist: $OUTPUT_DIR"
 cd "$OUTPUT_DIR"
 
 # 1. Download Ubuntu-Image, falls nicht vorhanden
@@ -27,6 +28,8 @@ if [ ! -f "$IMG_NAME" ]; then
 fi
 
 # 3. Kopiere das Image als Arbeitskopie
+mkdir -p "$OUTPUT_DIR"
+echo "[DEBUG] OUTPUT_DIR vor cp: $OUTPUT_DIR"
 cp -f "$IMG_NAME" "$WORK_IMG"
 
 # 4. Partitionen einbinden
