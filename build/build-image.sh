@@ -15,26 +15,25 @@ echo "[DEBUG] Aktuelles Arbeitsverzeichnis: $(pwd)"
 echo "[DEBUG] OUTPUT_DIR absolut: $(readlink -f "$OUTPUT_DIR")"
 mkdir -p "$OUTPUT_DIR"
 echo "[DEBUG] OUTPUT_DIR ist: $OUTPUT_DIR"
-cd "$OUTPUT_DIR"
 
 # 1. Download Ubuntu-Image, falls nicht vorhanden
-if [ ! -f "$IMG_XZ" ]; then
+if [ ! -f "$OUTPUT_DIR/$IMG_XZ" ]; then
   echo "[INFO] Lade Ubuntu-Image herunter..."
-  wget "$UBUNTU_URL"
+  wget -q --show-progress -O "$OUTPUT_DIR/$IMG_XZ" "$UBUNTU_URL" 2>&1 | grep -v '\.\{5\}'
 fi
 
 # 2. Entpacken (falls nötig)
-if [ ! -f "$IMG_NAME" ]; then
+if [ ! -f "$OUTPUT_DIR/$IMG_NAME" ]; then
   echo "[INFO] Entpacke Ubuntu-Image..."
-  xz -dk "$IMG_XZ"
+  xz -dk "$OUTPUT_DIR/$IMG_XZ"
 fi
 
 # 3. Kopiere das Image als Arbeitskopie
 echo "[DEBUG] Aktuelles Arbeitsverzeichnis vor cp: $(pwd)"
 echo "[DEBUG] OUTPUT_DIR absolut vor cp: $(readlink -f "$OUTPUT_DIR")"
-mkdir -p "$OUTPUT_DIR"
-echo "[DEBUG] OUTPUT_DIR vor cp: $OUTPUT_DIR"
-cp -f "$IMG_NAME" "$WORK_IMG"
+cp -f "$OUTPUT_DIR/$IMG_NAME" "$WORK_IMG"
+
+cd "$OUTPUT_DIR"
 
 # 4. Partitionen einbinden
 LOOPDEV=$(sudo losetup --show -fP "$WORK_IMG")
