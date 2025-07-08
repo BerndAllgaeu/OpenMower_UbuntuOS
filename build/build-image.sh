@@ -52,7 +52,8 @@ sudo mount "${LOOPDEV}p2" "$MNTDIR"
 ANSIBLE_SRC="$OUTPUT_DIR/ansible_src"
 rm -rf "$ANSIBLE_SRC"
 mkdir -p "$ANSIBLE_SRC"
-rsync -a --exclude venv --exclude __pycache__ --exclude '*.pyc' "$(dirname "$0")/../setup_webui/" "$ANSIBLE_SRC/setup_webui/"
+SETUP_WEBUI_SRC="$(readlink -f \"$(dirname \"$0\")/../setup_webui\")"
+rsync -a --exclude venv --exclude __pycache__ --exclude '*.pyc' "$SETUP_WEBUI_SRC/" "$ANSIBLE_SRC/setup_webui/"
 
 # Ansible Playbook ins gemountete Image kopieren
 sudo cp "$(dirname "$0")/ansible-playbook.yml" "$MNTDIR/root/ansible-playbook.yml"
