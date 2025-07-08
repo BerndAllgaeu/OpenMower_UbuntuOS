@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euxo pipefail
 
 # OpenMower_UbuntuOS: Echtes Ubuntu-Image für Raspberry Pi bauen
 # Voraussetzungen: kpartx, wget, xz, rsync, sudo, losetup, mount, chroot
@@ -25,9 +25,13 @@ if [ ! -f "$OUTPUT_DIR/$IMG_NAME" ]; then
   echo "[INFO] Entpacke Ubuntu-Image..."
   xz -dk "$OUTPUT_DIR/$IMG_XZ"
 fi
+ls -lh "$OUTPUT_DIR"
+[ -f "$OUTPUT_DIR/$IMG_NAME" ] || { echo "[ERROR] Entpacktes Image fehlt!"; exit 2; }
 
 # 3. Kopiere das Image als Arbeitskopie
 cp -f "$OUTPUT_DIR/$IMG_NAME" "$WORK_IMG"
+ls -lh "$WORK_IMG"
+[ -f "$WORK_IMG" ] || { echo "[ERROR] Arbeitskopie des Images fehlt!"; exit 3; }
 
 # 4. Partitionen einbinden
 LOOPDEV=$(sudo losetup --show -fP "$WORK_IMG")
