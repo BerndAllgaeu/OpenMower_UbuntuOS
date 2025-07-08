@@ -33,6 +33,16 @@ cp -f "$OUTPUT_DIR/$IMG_NAME" "$WORK_IMG"
 ls -lh "$WORK_IMG"
 [ -f "$WORK_IMG" ] || { echo "[ERROR] Arbeitskopie des Images fehlt!"; exit 3; }
 
+# 3a. Prüfe und bereinige Loop-Devices, falls keine frei sind
+if ! sudo losetup -f &>/dev/null; then
+  echo "[WARN] Keine freien Loop-Devices. Versuche, alte Devices zu lösen..."
+  sudo losetup -D
+  sleep 2
+  if ! sudo losetup -f &>/dev/null; then
+    echo "[ERROR] Immer noch keine freien Loop-Devices!"; exit 4;
+  fi
+fi
+
 # 4. Partitionen einbinden
 LOOPDEV=$(sudo losetup --show -fP "$WORK_IMG")
 echo "[INFO] Loopdevice: $LOOPDEV"
@@ -46,6 +56,16 @@ sudo mount "${LOOPDEV}p2" "$MNTDIR"
 # DNS für chroot bereitstellen, damit apt-get funktioniert
 sudo rm -f "$MNTDIR/etc/resolv.conf"
 sudo cp /etc/resolv.conf "$MNTDIR/etc/resolv.conf"
+
+# /dev/null im chroot sicherstellen
+if [ ! -e "$MNTDIR/dev/null" ]; then
+  sudo mknod -m 666 "$MNTDIR/dev/null" c 1 3 || true
+  sudo chown root:root "$MNTDIR/dev/null" || true
+fi
+
+# gpgv installieren, falls nicht vorhanden (Workaround für CI)
+sudo chroot "$MNTDIR" apt-get update || true
+sudo chroot "$MNTDIR" apt-get install -y gpgv || true
 
 # 5. Setup-WebUI und weitere Anpassungen per Ansible
 ANSIBLE_SRC="$OUTPUT_DIR/ansible_src"
