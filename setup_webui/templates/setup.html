@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenMower Setup</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        label { display: block; margin-top: 1em; }
+        input, select { width: 100%; padding: 0.5em; }
+        .btn { margin-top: 2em; padding: 1em; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        .flash { color: green; }
+    </style>
+</head>
+<body>
+    <h1>OpenMower Setup</h1>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+    <form method="post">
+        <label>Benutzername
+            <input type="text" name="user" required value="{{ config.user or 'pi' }}">
+        </label>
+        <label>Passwort
+            <input type="password" name="password" required value="{{ config.password or 'raspberry' }}">
+        </label>
+        <label>SSH Public Key
+            <input type="text" name="ssh_key" placeholder="ssh-rsa ..." value="{{ config.ssh_authorized_keys[0] if config.ssh_authorized_keys else '' }}">
+        </label>
+        <h2>WLAN</h2>
+        <label>SSID
+            <input type="text" name="wifi_ssid" value="{{ config.wifi.ssid if config.wifi else '' }}">
+        </label>
+        <label>WLAN Passwort
+            <input type="text" name="wifi_psk" value="{{ config.wifi.psk if config.wifi else '' }}">
+        </label>
+        <label>Land
+            <input type="text" name="wifi_country" value="{{ config.wifi.country if config.wifi else 'DE' }}">
+        </label>
+        <h2>Ethernet</h2>
+        <label>Statische IP
+            <input type="text" name="eth_ip" value="{{ config.eth.static_ip if config.eth else '192.168.1.100' }}">
+        </label>
+        <label>Netzmaske
+            <input type="text" name="eth_netmask" value="{{ config.eth.netmask if config.eth else '255.255.255.0' }}">
+        </label>
+        <label>Gateway
+            <input type="text" name="eth_gateway" value="{{ config.eth.gateway if config.eth else '192.168.1.1' }}">
+        </label>
+        <h2>Sprache & Zeitzone</h2>
+        <label>Sprache
+            <input type="text" name="language" value="{{ config.language or 'de_DE.UTF-8' }}">
+        </label>
+        <label>Zeitzone
+            <input type="text" name="timezone" value="{{ config.timezone or 'Europe/Berlin' }}">
+        </label>
+        <button class="btn" type="submit">Speichern</button>
+    </form>
+</body>
+</html>

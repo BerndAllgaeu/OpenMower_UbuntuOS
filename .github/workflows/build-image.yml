@@ -1,0 +1,28 @@
+name: Build UbuntuOS Image for Raspberry Pi
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y xz-utils python3 python3-venv python3-pip rsync
+      - name: Build Image (Demo: Setup-WebUI auf CI-Runner)
+        run: |
+          bash build/build-image.sh
+      - name: Upload Image Artifact
+        if: false  # Noch kein echtes Image vorhanden
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenMower_UbuntuOS.img.xz
+          path: output/OpenMower_UbuntuOS.img.xz
