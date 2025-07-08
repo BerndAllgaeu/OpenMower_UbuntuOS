@@ -1,0 +1,60 @@
+---
+- name: OpenMower UbuntuOS Setup
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Systempakete aktualisieren
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Notwendige Pakete installieren
+      apt:
+        name:
+          - python3-pip
+          - git
+          - curl
+          - rsync
+        state: present
+
+    - name: Setup-WebUI klonen
+      git:
+        repo: 'https://github.com/<dein-github-user>/<setup_webui-repo>.git'  # <-- ggf. anpassen
+        dest: /opt/setup_webui
+        version: main
+        force: yes
+
+    - name: Setup-WebUI Abhängigkeiten installieren
+      pip:
+        requirements: /opt/setup_webui/requirements.txt
+        executable: pip3
+      when: ansible_facts['os_family'] == 'Debian'
+      ignore_errors: yes
+
+    - name: Setup-WebUI als systemd-Service einrichten (Beispiel)
+      copy:
+        dest: /etc/systemd/system/setup_webui.service
+        content: |
+          [Unit]
+          Description=Setup WebUI
+          After=network.target
+
+          [Service]
+          Type=simple
+          ExecStart=/usr/bin/python3 /opt/setup_webui/app.py
+          WorkingDirectory=/opt/setup_webui
+          Restart=always
+          User=root
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Service aktivieren und starten
+      systemd:
+        name: setup_webui
+        enabled: yes
+        state: started
+
+    - name: (Optional) Weitere Konfigurationen
+      debug:
+        msg: "Hier können weitere Anpassungen ergänzt werden."

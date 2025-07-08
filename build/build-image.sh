@@ -1,91 +1,23 @@
 #!/bin/bash
 set -euxo pipefail
 
-# OpenMower_UbuntuOS: Echtes Ubuntu-Image für Raspberry Pi bauen
-# Voraussetzungen: kpartx, wget, xz, rsync, sudo, losetup, mount, chroot
+# OpenMower_UbuntuOS: Setup-Skript für Raspberry Pi (ausführen nach erstem Boot)
+# Dieses Skript installiert Ansible, klont das Setup-Repo und führt das Playbook lokal aus.
 
-# Konfiguration
-UBUNTU_URL="https://cdimage.ubuntu.com/releases/noble/release/ubuntu-24.04.2-preinstalled-server-arm64+raspi.img.xz"
-IMG_NAME="ubuntu-24.04.2-preinstalled-server-arm64+raspi.img"
-IMG_XZ="ubuntu-24.04.2-preinstalled-server-arm64+raspi.img.xz"
-OUTPUT_DIR="$(readlink -f $(dirname "$0")/../output)"
-WORK_IMG="$OUTPUT_DIR/OpenMower_UbuntuOS.img"
-SETUP_WEBUI_SRC="$(readlink -f $(dirname "$0")/../setup_webui)"
+REPO_URL="https://github.com/<dein-github-user>/<repo>.git"  # <-- Hier anpassen!
+PLAYBOOK="playbook.yml"  # Name des Playbooks im Repo
+REPO_DIR="OpenMower_UbuntuOS-setup"  # Zielverzeichnis für das geklonte Repo
 
-mkdir -p "$OUTPUT_DIR"
+# 1. Ansible & Git installieren (falls nicht vorhanden)
+sudo apt-get update
+sudo apt-get install -y ansible git
 
-# 1. Download Ubuntu-Image, falls nicht vorhanden
-if [ ! -f "$OUTPUT_DIR/$IMG_XZ" ]; then
-  echo "[INFO] Lade Ubuntu-Image herunter..."
-  wget -q --show-progress -O "$OUTPUT_DIR/$IMG_XZ" "$UBUNTU_URL" 2>&1 | grep -v '\.\{5\}'
-fi
+# 2. Repo klonen (ggf. vorher löschen)
+rm -rf "$REPO_DIR"
+git clone "$REPO_URL" "$REPO_DIR"
+cd "$REPO_DIR"
 
-# 2. Entpacken (falls nötig)
-if [ ! -f "$OUTPUT_DIR/$IMG_NAME" ]; then
-  echo "[INFO] Entpacke Ubuntu-Image..."
-  xz -dk "$OUTPUT_DIR/$IMG_XZ"
-fi
-ls -lh "$OUTPUT_DIR"
-[ -f "$OUTPUT_DIR/$IMG_NAME" ] || { echo "[ERROR] Entpacktes Image fehlt!"; exit 2; }
+# 3. Playbook lokal ausführen
+ansible-playbook -i "localhost," -c local "$PLAYBOOK"
 
-# 3. Kopiere das Image als Arbeitskopie
-cp -f "$OUTPUT_DIR/$IMG_NAME" "$WORK_IMG"
-ls -lh "$WORK_IMG"
-[ -f "$WORK_IMG" ] || { echo "[ERROR] Arbeitskopie des Images fehlt!"; exit 3; }
-
-# 3a. Prüfe und bereinige Loop-Devices, falls keine frei sind
-if ! sudo losetup -f &>/dev/null; then
-  echo "[WARN] Keine freien Loop-Devices. Versuche, alte Devices zu lösen..."
-  sudo losetup -D
-  sleep 2
-  if ! sudo losetup -f &>/dev/null; then
-    echo "[ERROR] Immer noch keine freien Loop-Devices!"; exit 4;
-  fi
-fi
-
-# 4. Partitionen einbinden
-LOOPDEV=$(sudo losetup --show -fP "$WORK_IMG")
-echo "[INFO] Loopdevice: $LOOPDEV"
-sleep 2
-
-# Mount rootfs (zweite Partition)
-MNTDIR="$OUTPUT_DIR/mnt-rootfs"
-mkdir -p "$MNTDIR"
-sudo mount "${LOOPDEV}p2" "$MNTDIR"
-
-# DNS für chroot bereitstellen, damit apt-get funktioniert
-sudo rm -f "$MNTDIR/etc/resolv.conf"
-sudo cp /etc/resolv.conf "$MNTDIR/etc/resolv.conf"
-
-# /dev/null im chroot sicherstellen
-if [ ! -e "$MNTDIR/dev/null" ]; then
-  sudo mknod -m 666 "$MNTDIR/dev/null" c 1 3 || true
-  sudo chown root:root "$MNTDIR/dev/null" || true
-fi
-
-# gpgv installieren, falls nicht vorhanden (Workaround für CI)
-sudo chroot "$MNTDIR" apt-get update || true
-sudo chroot "$MNTDIR" apt-get install -y gpgv || true
-
-# 5. Setup-WebUI und weitere Anpassungen per Ansible
-ANSIBLE_SRC="$OUTPUT_DIR/ansible_src"
-rm -rf "$ANSIBLE_SRC"
-mkdir -p "$ANSIBLE_SRC"
-rsync -a --exclude venv --exclude __pycache__ --exclude '*.pyc' "$SETUP_WEBUI_SRC/" "$ANSIBLE_SRC/setup_webui/"
-
-sudo cp "$(dirname "$0")/ansible-playbook.yml" "$MNTDIR/root/ansible-playbook.yml"
-sudo cp "$(dirname "$0")/ansible-cleanup.yml" "$MNTDIR/root/ansible-cleanup.yml"
-sudo cp -r "$ANSIBLE_SRC" "$MNTDIR/ansible_src"
-
-sudo chroot "$MNTDIR" bash -c "apt-get update && apt-get install -y ansible && ansible-playbook /root/ansible-playbook.yml && ansible-playbook /root/ansible-cleanup.yml"
-
-# 6. Unmount und aufräumen
-sudo umount "$MNTDIR"
-sudo losetup -d "$LOOPDEV"
-rm -rf "$MNTDIR"
-
-# 7. Komprimieren
-xz -z -f "$WORK_IMG"
-
-ls -lh "$OUTPUT_DIR"
-echo "[INFO] Build abgeschlossen. Image liegt in $OUTPUT_DIR/OpenMower_UbuntuOS.img.xz"
+echo "[INFO] Setup abgeschlossen. System ist bereit."
