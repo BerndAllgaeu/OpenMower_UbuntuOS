@@ -21,6 +21,6 @@ cd "$REPO_DIR"
 export LC_ALL=C.UTF-8
 
 # 3. Playbook lokal ausführen
-ansible-playbook -i "localhost," -c local "$PLAYBOOK"
+ansible-playbook -i "localhost," -c local "$PLAYBOOK" -vvv
 
 echo "[INFO] Setup abgeschlossen. System ist bereit."
