@@ -3,10 +3,10 @@
   hosts: localhost
   become: true
   tasks:
-    - name: Systempakete aktualisieren
+    - name: Systempakete aktualisieren (nur apt update)
       apt:
         update_cache: yes
-        upgrade: dist
+        upgrade: no
 
     - name: Notwendige Pakete installieren
       apt:
