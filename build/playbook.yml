@@ -27,6 +27,13 @@
         fi
         source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt
 
+    - name: Setup-WebUI Service stoppen (falls vorhanden)
+      systemd:
+        name: setup_webui
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
     - name: Setup-WebUI als systemd-Service einrichten (Beispiel)
       copy:
         dest: /etc/systemd/system/setup_webui.service
@@ -44,6 +51,9 @@
 
           [Install]
           WantedBy=multi-user.target
+
+    - name: systemd Daemon neu laden
+      command: systemctl daemon-reload
 
     - name: Service aktivieren und starten
       systemd:
