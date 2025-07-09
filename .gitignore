@@ -9,3 +9,5 @@ logs/
 
 # Python venvs
 setup_webui/venv/
+
+build/remote-setup.conf
