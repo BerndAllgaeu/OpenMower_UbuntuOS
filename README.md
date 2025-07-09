@@ -1,28 +1,35 @@
 # OpenMower_UbuntuOS
 
-Automatisiert erstelltes Ubuntu 24.04 LTS Server-Image für Raspberry Pi 4/5 mit LXDE, VS Code, NoMachine und Podman/ROS1.
+Automatisiertes Setup für Ubuntu 24.04 LTS auf Raspberry Pi 4/5 – alle Anpassungen erfolgen nach dem ersten Boot per Ansible-Playbook.
 
-## Features
-- Ubuntu Server 24.04 LTS (aktuellste LTS)
-- LXDE Desktop (leichtgewichtig, ohne unnötige Apps)
-- VS Code & NoMachine nativ installiert
-- Podman mit ROS1 (Details folgen)
-- Zentrale Konfigurationsdatei als Template (`config.template.yaml`)
-- Image als `.img.xz`
-- Erweiterbar für weitere Features
-- Build via GitHub Actions
+## Konzept
+- Du nutzt das offizielle Ubuntu-Image für den Raspberry Pi (z.B. von cdimage.ubuntu.com).
+- Nach dem ersten Boot führst du das Setup-Skript aus diesem Repository aus.
+- Das Skript installiert Ansible, klont das Setup-Repo und führt das Playbook lokal aus.
+- Alle Systemanpassungen, Installationen und Konfigurationen laufen deklarativ per Ansible.
 
-## Konfiguration
-Alle benutzerspezifischen Einstellungen (User, SSH-Key, WiFi, Ethernet-IP, Sprache, Zeitzone) werden über eine zentrale Konfigurationsdatei vorgenommen. Das Template liegt als `config.template.yaml` im Repo. Die ausgefüllte Datei `config.yaml` wird nicht eingecheckt.
+## Nutzung
+1. Ubuntu-Image auf SD-Karte flashen und Raspberry Pi booten.
+2. Setup-Skript ausführen:
 
-## Build
-Das Image wird automatisiert via GitHub Actions gebaut und als Artifact bereitgestellt.
+   ```bash
+   bash <(curl -fsSL https://raw.githubusercontent.com/<dein-github-user>/<repo>/main/build/build-image.sh)
+   ```
+   (oder das Skript manuell herunterladen und ausführen)
 
-## Ordnerstruktur
-- `.github/workflows/` – CI/CD Workflows
-- `build/` – Build-Skripte und Hilfsdateien
-- `config.template.yaml` – Vorlage für Konfiguration
+3. Das Playbook übernimmt alle weiteren Anpassungen (siehe `build/playbook.yml`).
 
-## ToDo
-- Details zu ROS1/Podman
-- Weitere Tools & Features
+## Dateien
+- `build/build-image.sh`: Setup-Skript für den Pi (installiert Ansible, klont Repo, startet Playbook)
+- `build/playbook.yml`: Ansible-Playbook für alle Anpassungen (z.B. Setup-WebUI, Systemdienste)
+- `config.template.yaml`/`config.yaml`: (Optional) Konfigurationsdateien für individuelle Anpassungen
+- `setup_webui/`: (Optional) Quellcode oder Hinweise für die Setup-WebUI
+
+## Hinweise
+- Das Repository enthält keine Image-Build-Skripte oder CI-Workflows mehr.
+- Alle Anpassungen erfolgen direkt auf dem Raspberry Pi nach dem ersten Boot.
+- Das Playbook ist leicht erweiterbar und kann beliebig angepasst werden.
+
+---
+
+Fragen oder Wünsche? Einfach ein Issue eröffnen!
