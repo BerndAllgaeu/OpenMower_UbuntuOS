@@ -26,6 +26,7 @@
           python3 -m venv venv
         fi
         source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt
+      executable: /bin/bash
 
     - name: Setup-WebUI Service stoppen (falls vorhanden)
       systemd:
