@@ -26,15 +26,13 @@
           sudo chown -R ubuntu:ubuntu venv
         fi
       executable: /bin/bash
+      become: true
 
     - name: Setup-WebUI venv löschen (falls vorhanden)
-      args:
-        chdir: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
-      shell: |
-        if [ -d venv ]; then
-          rm -rf venv
-        fi
-      executable: /bin/bash
+      file:
+        path: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/venv
+        state: absent
+      become: true
 
     - name: Setup-WebUI venv erstellen
       args:
