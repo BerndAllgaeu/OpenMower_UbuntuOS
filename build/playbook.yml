@@ -18,13 +18,29 @@
           - rsync
         state: present
 
+    - name: Setup-WebUI venv Besitz übernehmen (chown)
+      args:
+        chdir: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
+      shell: |
+        if [ -d venv ]; then
+          sudo chown -R ubuntu:ubuntu venv
+        fi
+      executable: /bin/bash
+
+    - name: Setup-WebUI venv löschen (falls vorhanden)
+      args:
+        chdir: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
+      shell: |
+        if [ -d venv ]; then
+          rm -rf venv
+        fi
+      executable: /bin/bash
+
     - name: Setup-WebUI venv erstellen
       args:
         chdir: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
       shell: |
-        if [ ! -d venv ]; then
-          python3 -m venv venv
-        fi
+        python3 -m venv venv
         source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt
       executable: /bin/bash
 
