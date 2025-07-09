@@ -35,12 +35,12 @@
       become: true
 
     - name: Setup-WebUI venv erstellen
-      args:
-        chdir: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
       shell: |
         python3 -m venv venv
         source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt
-      executable: /bin/bash
+      args:
+        chdir: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
+        executable: /bin/bash
 
     - name: Setup-WebUI Service stoppen (falls vorhanden)
       systemd:
