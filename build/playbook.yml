@@ -34,8 +34,8 @@
 
           [Service]
           Type=simple
-          ExecStart=/usr/bin/python3 /github/workspace/setup_webui/app.py
-          WorkingDirectory=/github/workspace/setup_webui
+          ExecStart=/usr/bin/python3 /home/ubuntu/OpenMower_UbuntuOS/setup_webui/app.py
+          WorkingDirectory=/home/ubuntu/OpenMower_UbuntuOS/setup_webui
           Restart=always
           User=root
 
