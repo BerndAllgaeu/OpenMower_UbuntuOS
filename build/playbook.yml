@@ -12,17 +12,20 @@
       apt:
         name:
           - python3-pip
+          - python3-venv
           - git
           - curl
           - rsync
         state: present
 
-    - name: Setup-WebUI Abhängigkeiten installieren
-      pip:
-        requirements: ../setup_webui/requirements.txt
-        executable: pip3
-      when: ansible_facts['os_family'] == 'Debian'
-      ignore_errors: yes
+    - name: Setup-WebUI venv erstellen
+      args:
+        chdir: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
+      shell: |
+        if [ ! -d venv ]; then
+          python3 -m venv venv
+        fi
+        source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt
 
     - name: Setup-WebUI als systemd-Service einrichten (Beispiel)
       copy:
@@ -34,8 +37,8 @@
 
           [Service]
           Type=simple
-          ExecStart=/usr/bin/python3 /home/ubuntu/OpenMower_UbuntuOS/setup_webui/app.py
-          WorkingDirectory=/home/ubuntu/OpenMower_UbuntuOS/setup_webui
+          ExecStart=/home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/venv/bin/python /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/app.py
+          WorkingDirectory=/home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
           Restart=always
           User=root
 
