@@ -17,16 +17,9 @@
           - rsync
         state: present
 
-    - name: Setup-WebUI klonen
-      git:
-        repo: 'https://github.com/<dein-github-user>/<setup_webui-repo>.git'  # <-- ggf. anpassen
-        dest: /opt/setup_webui
-        version: main
-        force: yes
-
     - name: Setup-WebUI Abhängigkeiten installieren
       pip:
-        requirements: /opt/setup_webui/requirements.txt
+        requirements: ../setup_webui/requirements.txt
         executable: pip3
       when: ansible_facts['os_family'] == 'Debian'
       ignore_errors: yes
@@ -41,8 +34,8 @@
 
           [Service]
           Type=simple
-          ExecStart=/usr/bin/python3 /opt/setup_webui/app.py
-          WorkingDirectory=/opt/setup_webui
+          ExecStart=/usr/bin/python3 /github/workspace/setup_webui/app.py
+          WorkingDirectory=/github/workspace/setup_webui
           Restart=always
           User=root
 
