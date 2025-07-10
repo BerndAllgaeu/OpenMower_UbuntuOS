@@ -8,9 +8,9 @@ REPO_URL="https://github.com/BerndAllgaeu/OpenMower_UbuntuOS.git"  # <-- Hier an
 PLAYBOOK="build/playbook.yml"  # Name des Playbooks im Repo
 REPO_DIR="OpenMower_UbuntuOS-setup"  # Zielverzeichnis für das geklonte Repo
 
-# 1. Ansible & Git installieren (falls nicht vorhanden)
+# 1. Systempakete installieren (Python venv, Git, ...)
 sudo apt-get update
-sudo apt-get install -y ansible git
+sudo apt-get install -y python3-venv python3-pip git
 
 # 2. Repo klonen (ggf. vorher löschen)
 rm -rf "$REPO_DIR"
@@ -32,7 +32,11 @@ fi
 # Locale-Workaround für Ansible
 export LC_ALL=C.UTF-8
 
-# 3. Playbook lokal ausführen
+# 3. Ansible venv vorbereiten und aktivieren
+./build/setup-ansible-venv.sh
+source ./build/ansible-venv/bin/activate
+
+# 4. Playbook lokal ausführen
 ansible-playbook -i "localhost," -c local "$PLAYBOOK"
 
 echo "[INFO] Setup abgeschlossen. System ist bereit."
