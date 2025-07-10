@@ -34,7 +34,7 @@ else
   # Passwort-Authentifizierung
   echo "[INFO] Setze passwortloses sudo für $PI_USER auf dem Pi ..."
   sshpass -p "$PI_PASS" ssh -o StrictHostKeyChecking=no "$PI_USER@$PI_IP" \
-    "echo '$PI_USER ALL=(ALL) NOPASSWD:ALL' | sudo -S tee /etc/sudoers.d/$PI_USER && sudo chmod 440 /etc/sudoers.d/$PI_USER"
+    "echo '$PI_PASS' | sudo -S bash -c 'echo \"$PI_USER ALL=(ALL) NOPASSWD:ALL\" > /etc/sudoers.d/$PI_USER && chmod 440 /etc/sudoers.d/$PI_USER'"
   sshpass -p "$PI_PASS" scp -o StrictHostKeyChecking=no "$LOCAL_SCRIPT_PATH" "$PI_USER@$PI_IP:$REMOTE_SCRIPT_PATH"
   sshpass -p "$PI_PASS" ssh -o StrictHostKeyChecking=no "$PI_USER@$PI_IP" "bash $REMOTE_SCRIPT_PATH"
 fi
