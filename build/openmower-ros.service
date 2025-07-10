@@ -1,0 +1,34 @@
+[Unit]
+Description=Podman container - openmower-ros.service
+Wants=network.target
+After=network-online.target NetworkManager.service
+StartLimitInterval=120
+StartLimitBurst=10
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Type=forking
+Restart=always
+RestartSec=15s
+TimeoutStartSec=1h
+TimeoutStopSec=120s
+
+ExecStartPre=/bin/rm -f %t/container-openmower-ros.pid %t/container-openmower-ros.ctr-id
+
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/container-openmower-ros.pid --cidfile %t/container-openmower-ros.ctr-id --cgroups=no-conmon \
+  --replace --detach --tty --privileged \
+  --name openmower-ros \
+  --network=host \
+  --volume /dev:/dev \
+  --volume /home/ubuntu/openmower_ws:/workspace:rw \
+  --env ROSCONSOLE_CONFIG_FILE=/config/rosconsole.config \
+  --env ROSOUT_DISABLE_FILE_LOGGING=True \
+  openmower_ros:latest
+
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/container-openmower-ros.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore --force --cidfile %t/container-openmower-ros.ctr-id
+
+PIDFile=%t/container-openmower-ros.pid
+
+[Install]
+WantedBy=multi-user.target
