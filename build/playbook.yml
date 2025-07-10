@@ -102,10 +102,9 @@
 
     - name: Docker-Image für open_mower_ros mit Podman bauen
       containers.podman.podman_image:
-        build:
-          path: /home/ubuntu/OpenMower_UbuntuOS-setup/openmower_ws/docker
         name: openmower_ros
         tag: latest
+        build: /home/ubuntu/OpenMower_UbuntuOS-setup/openmower_ws/docker
         push: false
       become: false
 
