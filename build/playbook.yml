@@ -21,7 +21,7 @@
     - name: OpenMower Workspace von GitHub klonen (dev-Branch, inkl. Submodule)
       git:
         repo: https://github.com/BerndAllgaeu/open_mower_ros.git
-        dest: /home/ubuntu/OpenMower_UbuntuOS-setup/openmower_ws
+        dest: /home/ubuntu/openmower_ws
         version: dev
         force: yes
         update: yes
