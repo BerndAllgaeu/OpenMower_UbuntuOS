@@ -18,6 +18,15 @@
           - rsync
         state: present
 
+    - name: OpenMower Workspace von GitHub klonen
+      git:
+        repo: https://github.com/BerndAllgaeu/open_mower_ros.git
+        dest: /home/ubuntu/OpenMower_UbuntuOS-setup/openmower_ws
+        version: main
+        force: yes
+        update: yes
+      become: false
+
     - name: Setup-WebUI venv Besitz übernehmen (chown)
       shell: |
         if [ -d venv ]; then
