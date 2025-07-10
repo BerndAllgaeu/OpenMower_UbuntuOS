@@ -38,6 +38,12 @@
         executable: /bin/bash
       become: true
 
+    - name: Setup-WebUI venv Besitz übernehmen (chown, vor Löschen)
+      ansible.builtin.command:
+        cmd: chown -R ubuntu:ubuntu /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/venv
+      ignore_errors: yes
+      become: true
+
     - name: Setup-WebUI venv löschen (falls vorhanden)
       file:
         path: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/venv
