@@ -85,36 +85,22 @@
         enabled: yes
         state: started
 
-    - name: Docker-Repository hinzufügen (offiziell)
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-      become: true
-
-    - name: Docker-Repository eintragen
-      apt_repository:
-        repo: deb [arch=arm64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable
-        state: present
-      become: true
-
-    - name: Neueste Docker-Version installieren
+    - name: Podman installieren (offiziell)
       apt:
         name:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
+          - podman
         state: latest
         update_cache: yes
       become: true
 
-    - name: Docker Python SDK installieren (für Ansible)
+    - name: Podman Python SDK installieren (für Ansible)
       pip:
-        name: docker
+        name: podman
         state: latest
       become: true
 
-    - name: Docker-Image für open_mower_ros bauen
-      community.docker.docker_image:
+    - name: Docker-Image für open_mower_ros mit Podman bauen
+      containers.podman.podman_image:
         build:
           path: /home/ubuntu/OpenMower_UbuntuOS-setup/openmower_ws/docker
         name: openmower_ros
