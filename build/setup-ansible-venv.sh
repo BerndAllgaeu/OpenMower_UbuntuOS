@@ -3,7 +3,7 @@
 # Usage: ./setup-ansible-venv.sh
 set -e
 
-VENV_DIR="$(dirname "$0")/ansible-venv"
+VENV_DIR="/home/ubuntu/venv_ansible"
 PYTHON=python3
 
 if [ ! -d "$VENV_DIR" ]; then

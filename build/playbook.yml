@@ -30,40 +30,32 @@
 
     - name: Setup-WebUI venv Besitz übernehmen (chown)
       shell: |
-        if [ -d venv ]; then
-          sudo chown -R ubuntu:ubuntu venv
+        if [ -d /home/ubuntu/venv_webui ]; then
+          sudo chown -R ubuntu:ubuntu /home/ubuntu/venv_webui
         fi
       args:
-        chdir: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
         executable: /bin/bash
       become: true
 
     - name: Setup-WebUI venv Besitz übernehmen (chown, vor Löschen)
       ansible.builtin.command:
-        cmd: chown -R ubuntu:ubuntu /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/venv
+        cmd: chown -R ubuntu:ubuntu /home/ubuntu/venv_webui
       ignore_errors: yes
       become: true
 
     - name: Setup-WebUI venv löschen (falls vorhanden)
       file:
-        path: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/venv
+        path: /home/ubuntu/venv_webui
         state: absent
       become: true
 
     - name: Setup-WebUI venv erstellen
       shell: |
-        python3 -m venv venv
-        source venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt
+        python3 -m venv /home/ubuntu/venv_webui
+        source /home/ubuntu/venv_webui/bin/activate && pip install --upgrade pip && pip install -r requirements.txt
       args:
         chdir: /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
         executable: /bin/bash
-
-    - name: Setup-WebUI Service stoppen (falls vorhanden)
-      systemd:
-        name: setup_webui
-        state: stopped
-        enabled: no
-      ignore_errors: yes
 
     - name: Setup-WebUI als systemd-Service einrichten (Beispiel)
       copy:
@@ -75,7 +67,7 @@
 
           [Service]
           Type=simple
-          ExecStart=/home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/venv/bin/python /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/app.py
+          ExecStart=/home/ubuntu/venv_webui/bin/python /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/app.py
           WorkingDirectory=/home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
           Restart=always
           User=root
