@@ -13,8 +13,8 @@ fi
 source "$VENV_DIR/bin/activate"
 
 pip install --upgrade pip
-pip install ansible
-pip install podman podman-compose
-ansible-galaxy collection install containers.podman
+pip install --upgrade ansible
+pip install --upgrade podman podman-compose
+ansible-galaxy collection install containers.podman --upgrade
 
 echo "Ansible venv bereit unter $VENV_DIR."
