@@ -29,25 +29,7 @@
       become: false
 
     - name: Setup-WebUI venv Besitz übernehmen (chown)
-      shell: |
-        if [ -d /home/ubuntu/venv_webui ]; then
-          sudo chown -R ubuntu:ubuntu /home/ubuntu/venv_webui
-        fi
-      args:
-        executable: /bin/bash
-      become: true
 
-    - name: Setup-WebUI venv Besitz übernehmen (chown, vor Löschen)
-      ansible.builtin.command:
-        cmd: chown -R ubuntu:ubuntu /home/ubuntu/venv_webui
-      ignore_errors: yes
-      become: true
-
-    - name: Setup-WebUI venv löschen (falls vorhanden)
-      file:
-        path: /home/ubuntu/venv_webui
-        state: absent
-      become: true
 
     - name: Setup-WebUI venv erstellen
       shell: |
