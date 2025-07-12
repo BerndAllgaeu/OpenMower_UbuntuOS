@@ -103,7 +103,6 @@
         name: openmower_ros
         tag: latest
         path: /home/ubuntu/openmower_ws/docker
-        file: Dockerfile
         push: false
       become: false
 
