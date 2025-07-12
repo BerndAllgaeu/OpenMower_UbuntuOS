@@ -70,7 +70,7 @@
           ExecStart=/home/ubuntu/venv_webui/bin/python /home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui/app.py
           WorkingDirectory=/home/ubuntu/OpenMower_UbuntuOS-setup/setup_webui
           Restart=always
-          User=root
+          User=ubuntu
 
           [Install]
           WantedBy=multi-user.target
