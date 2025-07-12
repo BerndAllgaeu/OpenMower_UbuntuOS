@@ -28,7 +28,6 @@
         recursive: yes
       become: false
 
-    - name: Setup-WebUI venv Besitz übernehmen (chown)
 
 
     - name: Setup-WebUI venv erstellen
