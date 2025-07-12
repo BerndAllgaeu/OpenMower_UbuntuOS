@@ -103,7 +103,7 @@
         name: openmower_ros
         tag: latest
         path: /home/ubuntu/openmower_ws/docker
-        containerfile: /home/ubuntu/openmower_ws/docker/Dockerfile
+        container_file: /home/ubuntu/openmower_ws/docker/Dockerfile
         push: false
         state: present
       become: false
