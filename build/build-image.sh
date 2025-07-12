@@ -34,7 +34,7 @@ export LC_ALL=C.UTF-8
 
 # 3. Ansible venv vorbereiten und aktivieren
 ./build/setup-ansible-venv.sh
-source ./build/ansible-venv/bin/activate
+source /home/ubuntu/venv_ansible/bin/activate
 
 # 4. Playbook lokal ausführen
 ansible-playbook -i "localhost," -c local "$PLAYBOOK"
