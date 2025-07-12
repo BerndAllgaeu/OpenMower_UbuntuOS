@@ -104,6 +104,7 @@
         tag: latest
         path: /home/ubuntu/openmower_ws/docker
         push: false
+        state: present
       become: false
 
     - name: openmower-ros systemd-Service installieren
